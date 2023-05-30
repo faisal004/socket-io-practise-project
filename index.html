@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Socket.IO chat</title>
-        <style>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
     body {
       margin: 0;
       padding-bottom: 3rem;
@@ -58,17 +58,17 @@
       background: #efefef;
     }
   </style>
-    </head>
+  </head>
 
-    <body>
-        <ul id="messages"></ul>
-        <form id="form" action>
-            <input id="input" autocomplete="off" /><button>Send</button>
-        </form>
-        <h3>Online Users:</h3>
-        <ul id="onlineUsers"></ul>
-        <script src="/socket.io/socket.io.js"></script>
-        <script>
+  <body>
+    <ul id="messages"></ul>
+    <form id="form" action>
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+    <h3>Online Users:</h3>
+    <ul id="onlineUsers"></ul>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
     const socket = io();
     const typingTimeout = 500;
     let isTyping = false;
@@ -138,5 +138,5 @@
       }
     });
   </script>
-    </body>
+  </body>
 </html>
