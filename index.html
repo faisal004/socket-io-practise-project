@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Socket.IO chat</title>
+        <style>
+    body {
+      margin: 0;
+      padding-bottom: 3rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    #form {
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.25rem;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      height: 3rem;
+      box-sizing: border-box;
+      backdrop-filter: blur(10px);
+    }
+
+    #input {
+      border: none;
+      padding: 0 1rem;
+      flex-grow: 1;
+      border-radius: 2rem;
+      margin: 0.25rem;
+    }
+
+    #input:focus {
+      outline: none;
+    }
+
+    #form > button {
+      background: #333;
+      border: none;
+      padding: 0 1rem;
+      margin: 0.25rem;
+      border-radius: 3px;
+      outline: none;
+      color: #fff;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages > li {
+      padding: 0.5rem 1rem;
+    }
+
+    #messages > li:nth-child(odd) {
+      background: #efefef;
+    }
+  </style>
+    </head>
+
+    <body>
+        <ul id="messages"></ul>
+        <form id="form" action>
+            <input id="input" autocomplete="off" /><button>Send</button>
+        </form>
+        <h3>Online Users:</h3>
+        <ul id="onlineUsers"></ul>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+    const socket = io();
+    const typingTimeout = 500;
+    let isTyping = false;
+  let typingTimeoutId;
+
+    
+    const nickname = prompt('Enter your nickname:');
+    socket.emit('setNickname', nickname);
+
+   
+    socket.on('userJoined', (nickname) => {
+      console.log(`User ${nickname} has joined.`);
+    });
+
+    socket.on('userLeft', (nickname) => {
+      console.log(`User ${nickname} has left.`);
+    });
+    socket.on('userTyping', (nickname) => {
+    console.log(`User ${nickname} is typing...`);
+    if (!isTyping) {
+      
+      alert(`${nickname} is typing...`);
+    }
+    
+    clearTimeout(typingTimeoutId);
+    typingTimeoutId = setTimeout(() => {
+      isTyping = false;
+    }, typingTimeout);
+  });
+
+  socket.on('onlineUsers', (users) => {
+    const onlineUsersList = document.getElementById('onlineUsers');
+    onlineUsersList.innerHTML = '';
+
+    users.forEach((user) => {
+      const userItem = document.createElement('li');
+      userItem.textContent = user;
+      onlineUsersList.appendChild(userItem);
+    });
+  });
+
+
+    
+    socket.on('chatMessage', (data) => {
+      console.log(`[${data.nickname}]: ${data.message}`);
+      var item = document.createElement('li');
+      item.textContent = `[${data.nickname}]: ${data.message}`;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    var messages = document.getElementById('messages');
+    var form = document.getElementById('form');
+    var input = document.getElementById('input');
+   input.addEventListener('input', () => {
+    if (!isTyping) {
+      socket.emit('typing');
+      isTyping = true;
+    }
+  });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (input.value) {
+        socket.emit('chatMessage', input.value);
+        input.value = '';
+      }
+    });
+  </script>
+    </body>
+</html>
